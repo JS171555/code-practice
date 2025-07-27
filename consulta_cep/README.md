@@ -83,7 +83,7 @@ cd consulta_cep
 É uma boa prática isolar as dependências do projeto. Crie e ative um ambiente virtual:
 
 ```bash
-python -m venv venv
+py -m venv venv
 # Para Linux/macOS:
 source venv/bin/activate
 # Para Windows:
