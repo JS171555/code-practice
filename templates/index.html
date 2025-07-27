@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de CEP</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <h1>Consulta de CEP</h1>
+            <p>Encontre endereços em todo o Brasil</p>
+        </div>
+
+        <form id="cepForm">
+            <div class="input-group">
+                <input type="text"
+                       name="cep"
+                       id="cep"
+                       placeholder="Digite o CEP (ex: 01001000)"
+                       required
+                       maxlength="9"
+                       pattern="\d{5}-?\d{3}">
+                <button type="submit">
+                    <span class="btn-text">Buscar</span>
+                    <span class="spinner hidden"></span>
+                </button>
+            </div>
+            <div class="input-hint">Digite 8 dígitos sem traço ou espaço</div>
+        </form>
+
+        <div id="resultado" class="result-container hidden"></div>
+    </div>
+
+    <div class="footer">
+        <p>Dados fornecidos por ViaCEP</p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('cepForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const cepInput = document.getElementById('cep');
+        const button = this.querySelector('button');
+        const spinner = button.querySelector('.spinner');
+        const btnText = button.querySelector('.btn-text');
+        const resultado = document.getElementById('resultado');
+
+        // Mostrar spinner e desativar botão
+        btnText.textContent = 'Buscando...';
+        spinner.classList.remove('hidden');
+        button.disabled = true;
+        resultado.classList.add('hidden');
+
+        const form = new FormData(this);
+
+        try {
+            const resposta = await fetch('/buscar', {
+                method: 'POST',
+                body: form
+            });
+
+            const dados = await resposta.json();
+
+            if (dados.erro) {
+                resultado.innerHTML = `<div class="error-card"><svg class="icon">...</svg><p>${dados.erro}</p></div>`;
+            } else {
+                resultado.innerHTML = `
+                    <div class="result-card">
+                        <h2>Endereço encontrado</h2>
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <span>CEP</span>
+                                <strong>${dados.cep}</strong>
+                            </div>
+                            <div class="result-item">
+                                <span>Logradouro</span>
+                                <strong>${dados.logradouro || 'Não informado'}</strong>
+                            </div>
+                            <div class="result-item">
+                                <span>Bairro</span>
+                                <strong>${dados.bairro || 'Não informado'}</strong>
+                            </div>
+                            <div class="result-item">
+                                <span>Cidade/UF</span>
+                                <strong>${dados.localidade} - ${dados.uf}</strong>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            resultado.classList.remove('hidden');
+
+        } catch (error) {
+            resultado.innerHTML = `<div class="error-card"><svg class="icon">...</svg><p>Erro na conexão com o servidor</p></div>`;
+            resultado.classList.remove('hidden');
+        } finally {
+            // Restaurar botão
+            btnText.textContent = 'Buscar';
+            spinner.classList.add('hidden');
+            button.disabled = false;
+        }
+    });
+
+    // Formatar CEP automaticamente
+    document.getElementById('cep').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+
+        if (value.length > 5) {
+            value = value.substring(0, 5) + '-' + value.substring(5, 8);
+        }
+
+        e.target.value = value;
+    });
+</script>
+</body>
+</html>
