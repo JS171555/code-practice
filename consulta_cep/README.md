@@ -27,7 +27,7 @@ O `Consulta de CEP` é uma solução prática para a validação e recuperação
 
 Para uma compreensão visual do funcionamento da aplicação, observe a imagem abaixo, que ilustra a interface de usuário e o resultado de uma consulta de CEP bem-sucedida.
 
-<img src="https://via.placeholder.com/800x400?text=Consulta+de+CEP+em+Ação" alt="Demonstração da aplicação Consulta de CEP">
+<img src="https://i.imgur.com/g8McwMU.jpeg" alt="Demonstração da aplicação Consulta de CEP">
 
 
 
